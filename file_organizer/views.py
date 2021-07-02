@@ -33,8 +33,6 @@ class Window(QWidget, Ui_Window):
         self._file_id = 0
 
         self._trash_path = None
-        self._move_dirs_path = []
-        self._move_dirs_name = []
         self._action_list = []
         self._target_path = []
 
@@ -48,6 +46,7 @@ class Window(QWidget, Ui_Window):
         self.openBtn.clicked.connect(self.open_folder)
         self.startBtn.clicked.connect(self.start_organize_file)
         self.skipBtn.clicked.connect(self.skip_file)
+        self.skipLeftBtn.clicked.connect(self.skip_file_left)
         self.deleteBtn.clicked.connect(self.delete_file)
         self.undoBtn.clicked.connect(self.undo_file)
         self.doneBtn.clicked.connect(self.done_organize)
@@ -79,6 +78,13 @@ class Window(QWidget, Ui_Window):
     def move_file(self, file_path, target_path):
         temp_path = shutil.move(file_path, target_path)
         self._target_path.append(temp_path)
+
+    def pop_from_file_list(self):
+        entry = self._file_list.pop(self._file_id)
+        self._num_files -= 1
+        if self._file_id >= self._num_files:
+            self._file_id -= 1
+        return(entry)
 
     def open_folder(self):
         if self.dirEdit.text():
@@ -122,39 +128,47 @@ class Window(QWidget, Ui_Window):
         # set status to 'organizing'
 
     def skip_file(self):
-        if self._file_id < self._num_files:
-            entry = self._file_list[self._file_id]
-            self._file_id += 1
+        # skip the current file and move right 
+        self._action_list.append('skip')
+        self._file_id += 1
+        if self._file_id>=self._num_files:
+            self._file_id = 0
+        self.print_file_info()
 
-            file_path = entry.absolute().as_posix()
-            self._target_path.append(file_path)
-            self._action_list.append('skip')
-
-            self.print_file_info()
-        
-    
+    def skip_file_left(self):
+        # skip the current file and move left 
+        self._action_list.append('skip_left')
+        self._file_id -= 1
+        if self._file_id < 0:
+            self._file_id = self._num_files - 1
+        self.print_file_info()
+             
     def delete_file(self):
-        if self._file_id < self._num_files:
-            entry = self._file_list[self._file_id]
-            self._file_id += 1
-
-            file_path = entry.absolute().as_posix()
-            self.move_file(file_path, self._trash_path)
-            self._action_list.append('delete')
-
-            self.print_file_info()
+        entry = self.pop_from_file_list()
+        file_path = entry.absolute().as_posix()
+        self.move_file(file_path, self._trash_path)
+        self._action_list.append('delete')
+        self.print_file_info()
   
     def undo_file(self):
         # check if undo is possible
         if self._action_list:
             # undo the last action
             action = self._action_list.pop()
-            temp_path = self._target_path.pop()
-            self._file_id -= 1
-            print('undo: ' + action)
-            print('temp_path: ' + temp_path)
             if (action == 'delete') or (action == 'move'):
-                shutil.move(temp_path, self._folder_dir)
+                temp_path = self._target_path.pop()
+                new_path = shutil.move(temp_path, self._folder_dir)
+                self._file_list.insert(self._file_id, Path(new_path))
+                self._num_files += 1
+            elif (action == 'skip'):
+                self._file_id -= 1
+                if self._file_id < 0:
+                    self._file_id = self._num_files - 1
+            elif (action == 'skip_left'):
+                self._file_id += 1
+                if self._file_id >= self._num_files:
+                    self._file_id = 0
+
         else:
             QMessageBox.warning(self, 'Warning', 'No more undo action!')
 
@@ -179,8 +193,7 @@ class Window(QWidget, Ui_Window):
             folder_name, ok  = QInputDialog.getText(
                 self, 'Input folder name', 'Folder name:')
             if ok:
-                entry = self._file_list[self._file_id]
-                self._file_id += 1
+                entry = self.pop_from_file_list()
                 file_path = entry.absolute().as_posix()
                 # create folder
                 folder_path = self.create_dir(self._folder_dir, folder_name)
@@ -191,8 +204,7 @@ class Window(QWidget, Ui_Window):
                 self.moveFolderList.addItem(folder_name)
         else:
             # move file to selected folder
-            entry = self._file_list[self._file_id]
-            self._file_id += 1
+            entry = self.pop_from_file_list()
             file_path = entry.absolute().as_posix()
             folder_name = item.text()
             folder_path = self._folder_path + '/' + folder_name
