@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QListWidget" name="listWidget">
+  <widget class="QListWidget" name="moveFolderList">
    <property name="geometry">
     <rect>
      <x>329</x>
@@ -53,7 +53,7 @@
     </property>
    </item>
   </widget>
-  <widget class="QGraphicsView" name="graphicsView">
+  <widget class="QGraphicsView" name="picView">
    <property name="geometry">
     <rect>
      <x>120</x>
@@ -63,7 +63,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="fileNameLabel">
    <property name="geometry">
     <rect>
      <x>150</x>
@@ -78,13 +78,13 @@
     </font>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>file_name</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QPlainTextEdit" name="plainTextEdit">
+  <widget class="QPlainTextEdit" name="infoText">
    <property name="geometry">
     <rect>
      <x>90</x>
@@ -107,14 +107,14 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="pushButton_5">
+       <widget class="QPushButton" name="startBtn">
         <property name="text">
          <string>Start</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_6">
+       <widget class="QPushButton" name="doneBtn">
         <property name="text">
          <string>Done</string>
         </property>
@@ -125,21 +125,21 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="deleteBtn">
         <property name="text">
          <string>Delete</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="skipBtn">
         <property name="text">
          <string>Skip</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="undoBtn">
         <property name="text">
          <string>Undo</string>
         </property>
@@ -160,14 +160,14 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <widget class="QPushButton" name="pushButton_4">
+     <widget class="QPushButton" name="openBtn">
       <property name="text">
        <string>Open</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="lineEdit">
+     <widget class="QLineEdit" name="dirEdit">
       <property name="readOnly">
        <bool>true</bool>
       </property>
@@ -189,14 +189,14 @@
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
     <item>
-     <widget class="QPushButton" name="pushButton_7">
+     <widget class="QPushButton" name="renameBtn">
       <property name="text">
        <string>Rename</string>
       </property>
      </widget>
     </item>
     <item>
-     <widget class="QLineEdit" name="lineEdit_2">
+     <widget class="QLineEdit" name="renameEdit">
       <property name="placeholderText">
        <string/>
       </property>
