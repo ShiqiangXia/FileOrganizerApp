@@ -10,6 +10,11 @@
     <height>443</height>
    </rect>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>14</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -22,9 +27,16 @@
      <height>231</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <pointsize>15</pointsize>
+     <weight>50</weight>
+     <bold>false</bold>
+    </font>
+   </property>
    <item>
     <property name="text">
-     <string>Add folder</string>
+     <string>+ Add folder</string>
     </property>
     <property name="font">
      <font>
@@ -39,17 +51,6 @@
        <blue>195</blue>
       </color>
      </brush>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>Folder1</string>
-    </property>
-    <property name="font">
-     <font>
-      <weight>75</weight>
-      <bold>true</bold>
-     </font>
     </property>
    </item>
   </widget>
@@ -80,8 +81,8 @@
    <property name="text">
     <string>file_name</string>
    </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
+   <property name="wordWrap">
+    <bool>true</bool>
    </property>
   </widget>
   <widget class="QPlainTextEdit" name="infoText">
