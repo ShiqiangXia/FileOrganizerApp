@@ -5,6 +5,8 @@
 from pathlib import Path
 from datetime import datetime
 from datetime import timedelta
+from send2trash import send2trash
+import shutil
 import humanize
 
 from PyQt5.QtWidgets import QWidget
@@ -15,14 +17,7 @@ from .ui.window import Ui_Window
 RECENT_DAYS = 30
 most_recent = datetime.now() - timedelta(days=RECENT_DAYS)
 
-def create_dir(current_dir, name):
-    path = current_dir.absolute().as_posix() + '/' + name
-    p = Path(path)
-    try:
-        p.mkdir()
-    except FileExistsError:
-        print('Folder %s already exists!'%name)
-    return(path)
+
 
 class Window(QWidget, Ui_Window):
     def __init__(self):
@@ -36,7 +31,9 @@ class Window(QWidget, Ui_Window):
         self._num_folders = 0
         self._folder_size = 0
         self._num_recent_files = 0
+        self._file_id = 0
 
+        self._trash_path = None
         self._move_dirs_path = []
         self._move_dirs_name = []
         self._action_list = []
@@ -51,6 +48,36 @@ class Window(QWidget, Ui_Window):
     def _connectSignalsSlots(self):
         self.openBtn.clicked.connect(self.open_folder)
         self.startBtn.clicked.connect(self.start_organize_file)
+        self.skipBtn.clicked.connect(self.skip_file)
+        self.deleteBtn.clicked.connect(self.delete_file)
+        self.undoBtn.clicked.connect(self.undo_file)
+        self.doneBtn.clicked.connect(self.done_organize)
+
+    def create_dir(self, current_dir, name):
+        path = current_dir.absolute().as_posix() + '/' + name
+        p = Path(path)
+        try:
+            p.mkdir()
+        except FileExistsError:
+            print('Folder %s already exists!'%name)
+        return(path)
+
+    def print_file_info(self):
+
+        entry = self._file_list[self._file_id]
+        file_name = entry.name
+        count = self._file_id + 1
+        file_size = humanize.naturalsize(entry.stat().st_size)
+        self.infoText.setPlainText(
+            f'Start organizing....\nFile {count}/{self._num_files},'
+            + f' Size {file_size}')
+        self.fileNameLabel.setText(file_name)
+        # set file picture
+        # TO DO
+
+    def move_file(self, file_path, target_path):
+        temp_path = shutil.move(file_path, target_path)
+        self._target_path.append(temp_path)
 
     def open_folder(self):
         if self.dirEdit.text():
@@ -83,22 +110,58 @@ class Window(QWidget, Ui_Window):
         self.infoText.setPlainText(
             f'{self._num_files} files, {self._num_folders} folders,\n'
             + f'size: {natural_size}')
-
-    
+ 
     def start_organize_file(self):
 
-        # create trash folder
-        trash_path = create_dir(self._folder_dir, 'trash_bin')
-        count = 1
-        self.infoText.setPlainText(f'File {count}/{self._num_files}')
-
-        while self._file_list:
-            entry = self._file_list.pop()
-            file_name = entry.name
-            file_path = entry.absolute().as_posix()
-            self.fileNameLabel.setText(file_name)
-
-
-
+        # create trash bin folder
+        self._trash_path = self.create_dir(self._folder_dir, 'trash_bin')
+        # print the file info
+        self.print_file_info()
         
+        # set status to 'organizing'
+
+    def skip_file(self):
+        entry = self._file_list[self._file_id]
+        self._file_id += 1
+
+        file_path = entry.absolute().as_posix()
+        self._target_path.append(file_path)
+        self._action_list.append('skip')
+
+        self.print_file_info()
+
+    def delete_file(self):
+        entry = self._file_list[self._file_id]
+        self._file_id += 1
+
+        file_path = entry.absolute().as_posix()
+        self.move_file(file_path, self._trash_path)
+        self._action_list.append('delete')
+
+        self.print_file_info()
+  
+    def undo_file(self):
+        # check if undo is possible
+        if self._action_list:
+            # undo the last action
+            action = self._action_list.pop()
+            temp_path = self._target_path.pop()
+            self._file_id -= 1
+
+            if action == 'delete' or 'move':
+                self.move_file(temp_path, self._folder_dir)
+                         
+        else:
+            print('Undo is not possible!')
+
+        self.print_file_info()
        
+    def done_organize(self):
+        # move trash_bin to real trash folder
+        send2trash(self._trash_path)
+        trash_dir = Path(self._trash_path)
+        # for f in trash_dir.iterdir():
+        #     send2trash(f.absolute().as_posix())
+        trash_dir.rmdir()
+
+        # set status to 'done'
