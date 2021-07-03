@@ -7,14 +7,18 @@ from datetime import datetime
 from datetime import timedelta
 from send2trash import send2trash
 import shutil
+import os
 import humanize
 
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QInputDialog
+from PyQt5.QtGui import QPixmap
+from PyQt5.Qt import Qt
 
 from .ui.window import Ui_Window
 
 RECENT_DAYS = 30
 most_recent = datetime.now() - timedelta(days=RECENT_DAYS)
+IMAGE_ROOT_PATH = '/Users/shiqiangxia/Desktop/file_organizer_project/file_organizer/ui/images/'
 
 
 
@@ -45,6 +49,7 @@ class Window(QWidget, Ui_Window):
     def _connectSignalsSlots(self):
         self.openBtn.clicked.connect(self.open_folder)
         self.startBtn.clicked.connect(self.start_organize_file)
+        self.previewBtn.clicked.connect(self.preview_file)
         self.skipBtn.clicked.connect(self.skip_file)
         self.skipLeftBtn.clicked.connect(self.skip_file_left)
         self.deleteBtn.clicked.connect(self.delete_file)
@@ -52,6 +57,7 @@ class Window(QWidget, Ui_Window):
         self.doneBtn.clicked.connect(self.done_organize)
         self.moveFolderList.itemDoubleClicked.connect(
             self.move_to_selected_folder)
+        self.renameBtn.clicked.connect(self.rename_file)
 
     def create_dir(self, current_dir, name):
         path = current_dir.absolute().as_posix() + '/' + name
@@ -63,7 +69,6 @@ class Window(QWidget, Ui_Window):
         return(path)
 
     def print_file_info(self):
-
         entry = self._file_list[self._file_id]
         file_name = entry.name
         count = self._file_id + 1
@@ -72,8 +77,24 @@ class Window(QWidget, Ui_Window):
             f'Start organizing....\nFile {count}/{self._num_files},'
             + f' Size: {file_size}')
         self.fileNameLabel.setText(file_name)
+
         # set file picture
         # TO DO
+        image_path = IMAGE_ROOT_PATH + 'txt_icon2.png'
+        pixmap = QPixmap(image_path)
+        self.picView.setPixmap(pixmap)
+
+
+    def preview_file(self):
+        # preview the current file
+        entry = self._file_list[self._file_id]
+        file_path = entry.absolute().as_posix()
+        cmd = "qlmanage -p " + file_path
+        os.popen(cmd).read()
+
+    def keyPressEvent(self, e):
+        if e.key() == Qt.Key_F1:
+            self.preview_file()
 
     def move_file(self, file_path, target_path):
         temp_path = shutil.move(file_path, target_path)
@@ -142,7 +163,7 @@ class Window(QWidget, Ui_Window):
         if self._file_id < 0:
             self._file_id = self._num_files - 1
         self.print_file_info()
-             
+
     def delete_file(self):
         entry = self.pop_from_file_list()
         file_path = entry.absolute().as_posix()
@@ -177,10 +198,7 @@ class Window(QWidget, Ui_Window):
     def done_organize(self):
         # move trash_bin to real trash folder
         send2trash(self._trash_path)
-        # trash_dir = Path(self._trash_path)
-        # # for f in trash_dir.iterdir():
-        # #     send2trash(f.absolute().as_posix())
-        # trash_dir.rmdir()
+        self.infoText.setPlainText('Done!')
 
         # set status to 'done'
     
@@ -213,5 +231,16 @@ class Window(QWidget, Ui_Window):
         
         self.print_file_info()
         
-        
+    def rename_file(self):
+        if self.renameEdit.text():
+            new_name = self.renameEdit.text()
+            new_path = self._folder_path + '/' + new_name
+            entry = self._file_list[self._file_id]
+            file_dir = Path(new_path)
+            entry.rename(file_dir)
+            self._file_list[self._file_id] = file_dir
+            self.print_file_info()
+            self.renameEdit.setText('')
+        else:
+            QMessageBox.warning(self, 'Warning', 'please input new name!')
         
