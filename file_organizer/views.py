@@ -134,8 +134,8 @@ class Window(QWidget, Ui_Window):
 
     # ------ Actions -----------
     def open_folder(self):
-        if self._appStatus == 0:
-            # status 0: open a folder
+        if self._appStatus == 0 or self._appStatus == 1:
+            # status 0 or 1: open a folder
             if self.dirEdit.text():
                 initDir = self.dirEdit.text()
             else:
@@ -174,11 +174,14 @@ class Window(QWidget, Ui_Window):
     def start_organize_file(self):
         if self._appStatus == 1:
             # status 1: start to organize files
-            # create trash bin folder
-            self._trash_path = self.create_dir(self._folder_dir, 'trash_bin')
-            # print the file info
-            self.print_file_info()
-            self._appStatus = 2
+            if self._num_files == 0:
+                QMessageBox.warning(self, 'Warning',
+                                    'No files to organize. Choose another folder.')
+            else:# create trash bin folder
+                self._trash_path = self.create_dir(self._folder_dir, 'trash_bin')
+                # print the file info
+                self.print_file_info()
+                self._appStatus = 2
         elif self._appStatus == 0:
             QMessageBox.warning(self, 'Warning',
                                 'Click [Open] to open a folder first')
@@ -228,6 +231,8 @@ class Window(QWidget, Ui_Window):
             self.move_file(file_path, self._trash_path)
             self._action_list.append('delete')
             self.print_file_info()
+            if self._num_files == 0:
+                self.done_organize()
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Start a task first. ')
@@ -305,8 +310,9 @@ class Window(QWidget, Ui_Window):
                 folder_path = self._folder_path + '/' + folder_name
                 self.move_file(file_path, folder_path)
                 self._action_list.append('move')
-            
             self.print_file_info()
+            if self._num_files == 0:
+                self.done_organize()
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Start a task first. ')
