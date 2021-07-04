@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Window(object):
     def setupUi(self, Window):
         Window.setObjectName("Window")
-        Window.resize(666, 443)
+        Window.resize(693, 443)
         font = QtGui.QFont()
         font.setPointSize(14)
         Window.setFont(font)
@@ -132,7 +132,7 @@ class Ui_Window(object):
 
     def retranslateUi(self, Window):
         _translate = QtCore.QCoreApplication.translate
-        Window.setWindowTitle(_translate("Window", "Form"))
+        Window.setWindowTitle(_translate("Window", "File Organizer"))
         __sortingEnabled = self.moveFolderList.isSortingEnabled()
         self.moveFolderList.setSortingEnabled(False)
         item = self.moveFolderList.item(0)
