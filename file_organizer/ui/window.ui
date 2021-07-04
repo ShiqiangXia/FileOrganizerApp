@@ -72,8 +72,7 @@
     <bool>true</bool>
    </property>
    <property name="plainText">
-    <string>Please [Open] folder.
-Next click [Start].</string>
+    <string/>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
@@ -142,9 +141,6 @@ Next click [Start].</string>
    </property>
    <property name="text">
     <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap>images/txt_icon2.png</pixmap>
    </property>
    <property name="scaledContents">
     <bool>true</bool>

@@ -177,7 +177,8 @@ class Window(QWidget, Ui_Window):
             if self._num_files == 0:
                 QMessageBox.warning(self, 'Warning',
                                     'No files to organize. Choose another folder.')
-            else:# create trash bin folder
+            else:
+                # create trash bin folder
                 self._trash_path = self.create_dir(self._folder_dir, 'trash_bin')
                 # print the file info
                 self.print_file_info()
@@ -269,11 +270,11 @@ class Window(QWidget, Ui_Window):
         if self._appStatus == 2:
             # move trash_bin to real trash folder
             send2trash(self._trash_path)
-            self.infoText.setPlainText('Done!\nPlease [Open] a folder to start a new organizing task.')
+            self.infoText.setPlainText('Done!\nYou may [Open] a folder to start a new organizing task.')
             self.dirEdit.setText('')
             self._appStatus = 0
         elif self._appStatus == 1:
-            self.infoText.setPlainText('Done!\nPlease [Open] a folder to start a new organizing task.')
+            self.infoText.setPlainText('Done!\You may [Open] a folder to start a new organizing task.')
             self.dirEdit.setText('')
             self._appStatus = 0
         else:
@@ -333,3 +334,18 @@ class Window(QWidget, Ui_Window):
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Start a task first. ')
+
+    def closeEvent(self, event):
+        # check if the app is in the middle of a task
+        if self._appStatus == 2:
+            quit_msg = "Are you sure you want to exit the program?"
+            reply = QMessageBox.question(self, 'Message', 
+                            quit_msg, QMessageBox.Yes, QMessageBox.No)
+
+            if reply == QMessageBox.Yes:
+                send2trash(self._trash_path)
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            event.accept()
