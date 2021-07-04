@@ -8,6 +8,7 @@ from datetime import timedelta
 from send2trash import send2trash
 import shutil
 import os
+import platform
 import humanize
 
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QInputDialog, QListWidgetItem
@@ -47,9 +48,15 @@ class Window(QWidget, Ui_Window):
         self.setupUi(self)
         self.infoText.setPlainText(
             'Please [Open] a folder to start a new organizing task.')
+        # set example icon
         image_path = IMAGE_ROOT_PATH + 'txt.png'
         pixmap = QPixmap(image_path)
         self.picView.setPixmap(pixmap)
+        # preivew button only for Mac
+        if platform.system() == 'Darwin':
+            self.previewBtn.setEnabled(True)
+        else:
+            self.previewBtn.setEnabled(False)
     
     def _connectSignalsSlots(self):
         self.openBtn.clicked.connect(self.open_folder)
@@ -159,7 +166,7 @@ class Window(QWidget, Ui_Window):
 
             self.infoText.setPlainText(
                 f'{self._num_files} files, {self._num_folders} folders,\n'
-                + f'size: {natural_size}\n'+'Click [Start] to start organizing...')
+                + f'Size: {natural_size}\n'+'Click [Start] to start organizing...')
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Click [Done] to complete current task first')
