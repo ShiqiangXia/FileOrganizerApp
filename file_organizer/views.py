@@ -10,8 +10,8 @@ import shutil
 import os
 import humanize
 
-from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QInputDialog
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QInputDialog, QListWidgetItem
+from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.Qt import Qt
 
 from .ui.window import Ui_Window
@@ -45,6 +45,9 @@ class Window(QWidget, Ui_Window):
 
     def _setupUI(self):
         self.setupUi(self)
+        image_path = IMAGE_ROOT_PATH + 'txt.png'
+        pixmap = QPixmap(image_path)
+        self.picView.setPixmap(pixmap)
 
     def _connectSignalsSlots(self):
         self.openBtn.clicked.connect(self.open_folder)
@@ -68,19 +71,39 @@ class Window(QWidget, Ui_Window):
             print('Folder %s already exists!'%name)
         return(path)
 
+    def get_icon(self, extension):
+        if extension in ['.jpg', '.png', '.pdf', '.txt', '.doc', '.xlsx', '.pptx', '.py']:
+            icon_name = extension[1:]+'.png'
+        elif extension in ['.gif', '.tiff', '.bmp', '.svg', '.eps', '.jpeg', '.heic', '.heif']:
+            icon_name = 'image.png'
+        elif extension in ['.mp3', '.wav', '.wma']:
+            icon_name = 'music.png'
+        elif extension in ['.mp4', '.mov', '.avi', '.wmv', '.m4v', '.mpg', '.mpeg', '.webm']:
+            icon_name = 'video.png'
+        elif extension in ['.7z', '.zip', '.rar', '.tar', '.gz']:
+            icon_name = 'zip.png'
+        elif extension in ['.c', '.cpp', '.java', '.h', '.html', '.php', '.hpp', '.cxx', '.c++', '.hxx', '.h++']:
+            icon_name = 'code.png'
+        elif extension in ['.dmg', '.exe', '.DS_Store']:
+            icon_name = 'setting.png'
+        else:
+            icon_name = 'file.png'
+        return(icon_name)
+
     def print_file_info(self):
         entry = self._file_list[self._file_id]
         file_name = entry.name
         count = self._file_id + 1
         file_size = humanize.naturalsize(entry.stat().st_size)
         self.infoText.setPlainText(
-            f'Start organizing....\nFile {count}/{self._num_files},'
+            f'Start organizing....\nPress F1 to preview (Mac only)\nFile {count}/{self._num_files},'
             + f' Size: {file_size}')
         self.fileNameLabel.setText(file_name)
 
         # set file picture
-        # TO DO
-        image_path = IMAGE_ROOT_PATH + 'txt_icon2.png'
+        extension = entry.suffix
+        icon_name = self.get_icon(extension)
+        image_path = IMAGE_ROOT_PATH + icon_name
         pixmap = QPixmap(image_path)
         self.picView.setPixmap(pixmap)
 
@@ -205,7 +228,7 @@ class Window(QWidget, Ui_Window):
     def move_to_selected_folder(self, item):
         print(item.text())
 
-        if item.text() == '+ Add folder':
+        if item.text() == '+ Add folder (double click)':
             # add folder to move list
             # get folder name
             folder_name, ok  = QInputDialog.getText(
@@ -219,7 +242,11 @@ class Window(QWidget, Ui_Window):
                 self.move_file(file_path, folder_path)
                 self._action_list.append('move')
                 # add folder to moveFolder List
-                self.moveFolderList.addItem(folder_name)
+                item = QListWidgetItem(folder_name)
+                icon = QIcon()
+                icon.addPixmap(QPixmap(IMAGE_ROOT_PATH+'folder.png'), QIcon.Selected, QIcon.Off)
+                item.setIcon(icon)
+                self.moveFolderList.addItem(item)
         else:
             # move file to selected folder
             entry = self.pop_from_file_list()
