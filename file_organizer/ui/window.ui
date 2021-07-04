@@ -66,6 +66,10 @@
    <property name="readOnly">
     <bool>true</bool>
    </property>
+   <property name="plainText">
+    <string>[Open] folder
+Click [Start] to organize files</string>
+   </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
@@ -102,7 +106,7 @@
      <x>100</x>
      <y>390</y>
      <width>211</width>
-     <height>31</height>
+     <height>33</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -121,19 +125,6 @@
      </widget>
     </item>
    </layout>
-  </widget>
-  <widget class="Line" name="line">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>120</y>
-     <width>621</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="orientation">
-    <enum>Qt::Horizontal</enum>
-   </property>
   </widget>
   <widget class="QLabel" name="picView">
    <property name="geometry">
@@ -160,7 +151,7 @@
      <x>360</x>
      <y>140</y>
      <width>211</width>
-     <height>31</height>
+     <height>33</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -186,7 +177,7 @@
      <x>120</x>
      <y>140</y>
      <width>221</width>
-     <height>31</height>
+     <height>33</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_5">
@@ -212,7 +203,7 @@
      <x>360</x>
      <y>80</y>
      <width>211</width>
-     <height>31</height>
+     <height>33</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -232,13 +223,13 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>100</x>
      <y>350</y>
      <width>211</width>
-     <height>31</height>
+     <height>33</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_6">
