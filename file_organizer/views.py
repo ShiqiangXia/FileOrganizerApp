@@ -133,9 +133,24 @@ class Window(QWidget, Ui_Window):
             self._file_id -= 1
         return(entry)
 
+    def clean_data(self):
+        self._folder_path = None
+        self._folder_dir = None
+        self._file_list = []
+        self._num_files = 0
+        self._num_folders = 0
+        self._folder_size = 0
+        self._num_recent_files = 0
+        self._file_id = 0
+        self._trash_path = None
+        self._file_list = []
+        self._target_path = []
+        self._action_list = []
+    
     # ------ Actions -----------
     def open_folder(self):
         if self._appStatus == 0 or self._appStatus == 1:
+            self.clean_data()
             # status 0 or 1: open a folder
             if self.dirEdit.text():
                 initDir = self.dirEdit.text()
@@ -274,10 +289,12 @@ class Window(QWidget, Ui_Window):
             self.infoText.setPlainText('Done!\nYou may [Open] a folder to start a new organizing task.')
             self.dirEdit.setText('')
             self._appStatus = 0
+            self.clean_data()
         elif self._appStatus == 1:
             self.infoText.setPlainText('Done!\You may [Open] a folder to start a new organizing task.')
             self.dirEdit.setText('')
             self._appStatus = 0
+            self.clean_data()
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Start a task first. ')
