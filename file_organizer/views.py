@@ -82,6 +82,7 @@ class Window(QWidget, Ui_Window):
         return(path)
 
     def get_icon(self, extension):
+        extension = extension.lower()
         if extension in ['.jpg', '.png', '.pdf', '.txt', '.doc', '.xlsx', '.pptx', '.py']:
             icon_name = extension[1:]+'.png'
         elif extension in ['.gif', '.tiff', '.bmp', '.svg', '.eps', '.jpeg', '.heic', '.heif']:
