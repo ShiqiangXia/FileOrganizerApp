@@ -151,15 +151,17 @@ class Window(QWidget, Ui_Window):
     def create_nonexist_file_name(self, file_name, target_path):
         flag = True
         new_name = file_name
+        extenion = file_name.split('.')[-1]
+        pure_name = file_name.split('.')[0]
         ct = 0
         while flag:
-            file = Path(target_path+'/'+new_name)
+            file = Path(target_path+'/' + new_name)
             if file.exists():
                 ct += 1
-                new_name = file_name + '(' + str(ct) + ')'
+                new_name = pure_name + '(' + str(ct) + ')' + '.' + extenion
             else:
                 flag = False
-        return(file_name)
+        return(new_name)
     # ------ Actions -----------
     def open_folder(self):
         if self._appStatus == 0 or self._appStatus == 1:
@@ -359,22 +361,28 @@ class Window(QWidget, Ui_Window):
                 new_name = self.renameEdit.text()
                 
                 entry = self._file_list[self._file_id]
-                old_name = entry.name
+                temp_name = new_name.split('.')
 
-                if new_name.suffix() != old_name.suffix():
-                    msg = 'Are you sure you want to change the file'
-                    +' extension to be'+new_name.suffix()+' ?'
-                    ok = QMessageBox.question(self, 'Message', msg,
-                     QMessageBox.Yes, QMessageBox.No)
-                else:
+                if len(temp_name) == 1:
+                    new_name += entry.suffix
                     ok = QMessageBox.Yes
+                else:
+                    print(temp_name[-1])
+                    print(entry.suffix)
+                    if temp_name[-1] != entry.suffix[1:]:
+                        msg = "Are you sure you want to change the file"+" extension to be '"+temp_name[-1]+"' ?"
+                        ok = QMessageBox.question(self, 'Message', msg, QMessageBox.Yes, QMessageBox.No)
+                    else:
+                        ok = QMessageBox.Yes
                     
-                if ok==QMessageBox.Yes: 
-                    new_name = self.create_nonexist_file_name(new_name, self._folder_path)
-                    new_path = self._folder_path + '/' + new_name
-                    file_dir = Path(new_path)
-                    entry.rename(file_dir)
-                    self._file_list[self._file_id] = file_dir
+                if ok == QMessageBox.Yes:
+                    if new_name != entry.name:
+                        new_name = self.create_nonexist_file_name(new_name, self._folder_path)
+                        new_path = self._folder_path + '/' + new_name
+                        file_dir = Path(new_path)
+                        entry.rename(file_dir)
+                        self._file_list[self._file_id] = file_dir
+
                     self.print_file_info()
                     self.renameEdit.setText('')
             else:
@@ -399,5 +407,5 @@ class Window(QWidget, Ui_Window):
             event.accept()
 
     # to do list
-    # check the new name (rename) is valid (it may already exist, we don't want to overwrite it)
+    # done check the new name (rename) is valid (it may already exist, we don't want to overwrite it)
     # check if the file name exist in the trarget folder (move or delete)
