@@ -357,14 +357,26 @@ class Window(QWidget, Ui_Window):
         if self._appStatus == 2:
             if self.renameEdit.text():
                 new_name = self.renameEdit.text()
-                new_name = self.create_nonexist_file_name(new_name, self._folder_path)
-                new_path = self._folder_path + '/' + new_name
+                
                 entry = self._file_list[self._file_id]
-                file_dir = Path(new_path)
-                entry.rename(file_dir)
-                self._file_list[self._file_id] = file_dir
-                self.print_file_info()
-                self.renameEdit.setText('')
+                old_name = entry.name
+
+                if new_name.suffix() != old_name.suffix():
+                    msg = 'Are you sure you want to change the file'
+                    +' extension to be'+new_name.suffix()+' ?'
+                    ok = QMessageBox.question(self, 'Message', msg,
+                     QMessageBox.Yes, QMessageBox.No)
+                else:
+                    ok = QMessageBox.Yes
+                    
+                if ok==QMessageBox.Yes: 
+                    new_name = self.create_nonexist_file_name(new_name, self._folder_path)
+                    new_path = self._folder_path + '/' + new_name
+                    file_dir = Path(new_path)
+                    entry.rename(file_dir)
+                    self._file_list[self._file_id] = file_dir
+                    self.print_file_info()
+                    self.renameEdit.setText('')
             else:
                 QMessageBox.warning(self, 'Warning', 'Please input new name first!')
         else:
