@@ -123,6 +123,7 @@ class Window(QWidget, Ui_Window):
             self.preview_file()
 
     def move_file(self, file_path, target_path):
+    
         temp_path = shutil.move(file_path, target_path)
         self._target_path.append(temp_path)
 
@@ -147,6 +148,18 @@ class Window(QWidget, Ui_Window):
         self._target_path = []
         self._action_list = []
     
+    def create_nonexist_file_name(self, file_name, target_path):
+        flag = True
+        new_name = file_name
+        ct = 0
+        while flag:
+            file = Path(target_path+'/'+new_name)
+            if file.exists():
+                ct += 1
+                new_name = file_name + '(' + str(ct) + ')'
+            else:
+                flag = False
+        return(file_name)
     # ------ Actions -----------
     def open_folder(self):
         if self._appStatus == 0 or self._appStatus == 1:
@@ -182,7 +195,7 @@ class Window(QWidget, Ui_Window):
 
             self.infoText.setPlainText(
                 f'{self._num_files} files, {self._num_folders} folders,\n'
-                + f'Size: {natural_size}\n'+'Click [Start] to start organizing...')
+                + f'Size: {natural_size}\n'+'Click [Start] to start organizing')
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Click [Done] to complete current task first')
@@ -331,7 +344,6 @@ class Window(QWidget, Ui_Window):
                 folder_path = self._folder_path + '/' + folder_name
                 self.move_file(file_path, folder_path)
                 self._action_list.append('move')
-            self.print_file_info()
             
             if self._num_files == 0:
                 self.done_organize()
@@ -345,6 +357,7 @@ class Window(QWidget, Ui_Window):
         if self._appStatus == 2:
             if self.renameEdit.text():
                 new_name = self.renameEdit.text()
+                new_name = self.create_nonexist_file_name(new_name, self._folder_path)
                 new_path = self._folder_path + '/' + new_name
                 entry = self._file_list[self._file_id]
                 file_dir = Path(new_path)
@@ -372,3 +385,7 @@ class Window(QWidget, Ui_Window):
                 event.ignore()
         else:
             event.accept()
+
+    # to do list
+    # check the new name (rename) is valid (it may already exist, we don't want to overwrite it)
+    # check if the file name exist in the trarget folder (move or delete)
