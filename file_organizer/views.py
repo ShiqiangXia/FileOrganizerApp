@@ -247,9 +247,11 @@ class Window(QWidget, Ui_Window):
             file_path = entry.absolute().as_posix()
             self.move_file(file_path, self._trash_path)
             self._action_list.append('delete')
-            self.print_file_info()
+            
             if self._num_files == 0:
                 self.done_organize()
+            else:
+                self.print_file_info()
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Start a task first. ')
@@ -330,8 +332,11 @@ class Window(QWidget, Ui_Window):
                 self.move_file(file_path, folder_path)
                 self._action_list.append('move')
             self.print_file_info()
+            
             if self._num_files == 0:
                 self.done_organize()
+            else:
+                self.print_file_info()
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Start a task first. ')
