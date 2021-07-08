@@ -172,32 +172,34 @@ class Window(QWidget, Ui_Window):
             else:
                 initDir = str(Path.home())
 
-            self._folder_path = QFileDialog.getExistingDirectory(
-                self, "Select a folder", initDir)
+            open_path = QFileDialog.getExistingDirectory(
+                self, "Select a folder", initDir, options=QFileDialog.DontUseNativeDialog)
+            if open_path:
+                self._folder_path = open_path
+                
+                self.dirEdit.setText(self._folder_path)
+                self._folder_dir = Path(self._folder_path)
+                self._appStatus = 1
 
-            self.dirEdit.setText(self._folder_path)
-            self._folder_dir = Path(self._folder_path)
-            self._appStatus = 1
+                # get file list
+                for entry in self._folder_dir.iterdir():
+                    if entry.is_file() and (not entry.name.startswith('.')):
+                        self._num_files += 1
+                        self._file_list.append(entry)
+                        mtime = datetime.fromtimestamp(entry.stat().st_mtime)
+                        if mtime > most_recent:
+                            self._num_recent_files += 1
+                    else:
+                        self._num_folders += 1
 
-            # get file list
-            for entry in self._folder_dir.iterdir():
-                if entry.is_file() and (not entry.name.startswith('.')):
-                    self._num_files += 1
-                    self._file_list.append(entry)
-                    mtime = datetime.fromtimestamp(entry.stat().st_mtime)
-                    if mtime > most_recent:
-                        self._num_recent_files += 1
-                else:
-                    self._num_folders += 1
+                # get folder size
+                for f in self._folder_dir.glob('**/*'):
+                    self._folder_size += f.stat().st_size
+                natural_size = humanize.naturalsize(self._folder_size)
 
-            # get folder size
-            for f in self._folder_dir.glob('**/*'):
-                self._folder_size += f.stat().st_size
-            natural_size = humanize.naturalsize(self._folder_size)
-
-            self.infoText.setPlainText(
-                f'{self._num_files} files, {self._num_folders} folders,\n'
-                + f'Size: {natural_size}\n'+'Click [Start] to start organizing')
+                self.infoText.setPlainText(
+                    f'{self._num_files} files, {self._num_folders} folders,\n'
+                    + f'Size: {natural_size}\n'+'Click [Start] to start organizing')
         else:
             QMessageBox.warning(self, 'Warning',
                                 'Click [Done] to complete current task first')
