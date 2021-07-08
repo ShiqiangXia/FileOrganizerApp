@@ -314,8 +314,6 @@ class Window(QWidget, Ui_Window):
             ct = self.moveFolderList.count()
             for i in range(1, ct):
                 self.moveFolderList.takeItem(i)
-
-            print(ct)
             self._appStatus = 0
             self.clean_data()
         elif self._appStatus == 1:
