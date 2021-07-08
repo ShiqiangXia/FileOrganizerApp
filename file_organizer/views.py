@@ -222,7 +222,7 @@ class Window(QWidget, Ui_Window):
                                 'Click [Done] to complete current task first')
 
     def preview_file(self):
-        if self._appStatus == 2:
+        if self._appStatus == 99: #2:
             # preview the current file
             entry = self._file_list[self._file_id]
             file_path = entry.absolute().as_posix()
@@ -230,7 +230,7 @@ class Window(QWidget, Ui_Window):
             os.popen(cmd).read()
         else:
             QMessageBox.warning(self, 'Warning',
-                                'Start a task first. ')
+                                'Preview not implemented yet. ')
 
     def skip_file(self):
         if self._appStatus == 2:
@@ -314,7 +314,7 @@ class Window(QWidget, Ui_Window):
             ct = self.moveFolderList.count()
             for i in range(1, ct):
                 self.moveFolderList.takeItem(i)
-                
+
             print(ct)
             self._appStatus = 0
             self.clean_data()
