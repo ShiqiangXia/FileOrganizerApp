@@ -181,7 +181,7 @@ class Window(QWidget, Ui_Window):
 
             # get file list
             for entry in self._folder_dir.iterdir():
-                if entry.is_file():
+                if entry.is_file() and (not entry.name.startswith('.')):
                     self._num_files += 1
                     self._file_list.append(entry)
                     mtime = datetime.fromtimestamp(entry.stat().st_mtime)
@@ -350,7 +350,7 @@ class Window(QWidget, Ui_Window):
                 file_path = entry.absolute().as_posix()
                 folder_name = item.text()
                 folder_path = self._folder_path + '/' + folder_name
-                
+
                 # check if file name exists in folder
                 new_name = self.create_nonexist_file_name(entry.name, folder_path)
                 if new_name != entry.name:
