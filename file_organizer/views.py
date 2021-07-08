@@ -285,7 +285,7 @@ class Window(QWidget, Ui_Window):
                 action = self._action_list.pop()
                 if (action == 'delete') or (action == 'move'):
                     temp_path = self._target_path.pop()
-                    new_path = shutil.move(temp_path, self._folder_dir)
+                    new_path = shutil.move(temp_path, self._folder_path)
                     self._file_list.insert(self._file_id, Path(new_path))
                     self._num_files += 1
                 elif (action == 'skip'):
@@ -311,6 +311,11 @@ class Window(QWidget, Ui_Window):
             send2trash(self._trash_path)
             self.infoText.setPlainText('Done!\nYou may [Open] a folder to \nstart a new organizing task.')
             self.dirEdit.setText('')
+            ct = self.moveFolderList.count()
+            for i in range(1, ct):
+                self.moveFolderList.takeItem(i)
+                
+            print(ct)
             self._appStatus = 0
             self.clean_data()
         elif self._appStatus == 1:
