@@ -260,6 +260,12 @@ class Window(QWidget, Ui_Window):
         if self._appStatus == 2:
             entry = self.pop_from_file_list()
             file_path = entry.absolute().as_posix()
+            # check if file name exist in trash bin
+            new_name = self.create_nonexist_file_name(entry.name, self._trash_path)
+            if new_name != entry.name:
+                file_path = self._folder_path + '/' + new_name
+                entry.rename(Path(file_path))
+
             self.move_file(file_path, self._trash_path)
             self._action_list.append('delete')
             
@@ -344,6 +350,13 @@ class Window(QWidget, Ui_Window):
                 file_path = entry.absolute().as_posix()
                 folder_name = item.text()
                 folder_path = self._folder_path + '/' + folder_name
+                
+                # check if file name exists in folder
+                new_name = self.create_nonexist_file_name(entry.name, folder_path)
+                if new_name != entry.name:
+                    file_path = self._folder_path + '/' + new_name
+                    entry.rename(Path(file_path))
+
                 self.move_file(file_path, folder_path)
                 self._action_list.append('move')
             
@@ -367,8 +380,6 @@ class Window(QWidget, Ui_Window):
                     new_name += entry.suffix
                     ok = QMessageBox.Yes
                 else:
-                    print(temp_name[-1])
-                    print(entry.suffix)
                     if temp_name[-1] != entry.suffix[1:]:
                         msg = "Are you sure you want to change the file"+" extension to be '"+temp_name[-1]+"' ?"
                         ok = QMessageBox.question(self, 'Message', msg, QMessageBox.Yes, QMessageBox.No)
