@@ -9,7 +9,7 @@ from send2trash import send2trash
 import shutil
 import os
 import platform
-import humanize
+# import humanize
 
 from PyQt5.QtWidgets import QWidget, QFileDialog, QMessageBox, QInputDialog, QListWidgetItem
 from PyQt5.QtGui import QPixmap, QIcon
@@ -105,7 +105,9 @@ class Window(QWidget, Ui_Window):
         entry = self._file_list[self._file_id]
         file_name = entry.name
         count = self._file_id + 1
-        file_size = humanize.naturalsize(entry.stat().st_size)
+        # file_size = humanize.naturalsize(entry.stat().st_size)
+        file_size = entry.stat().st_size
+
         self.infoText.setPlainText(
             f'Start organizing....\nPress F1 to preview (Mac only)\nFile {count}/{self._num_files},'
             + f' Size: {file_size}')
@@ -195,7 +197,8 @@ class Window(QWidget, Ui_Window):
                 # get folder size
                 for f in self._folder_dir.glob('**/*'):
                     self._folder_size += f.stat().st_size
-                natural_size = humanize.naturalsize(self._folder_size)
+                # natural_size = humanize.naturalsize(self._folder_size)
+                natural_size = self._folder_size
 
                 self.infoText.setPlainText(
                     f'{self._num_files} files, {self._num_folders} folders,\n'
@@ -319,7 +322,7 @@ class Window(QWidget, Ui_Window):
             self._appStatus = 0
             self.clean_data()
         elif self._appStatus == 1:
-            self.infoText.setPlainText('Done!\You may [Open] a folder to \nstart a new organizing task.')
+            self.infoText.setPlainText('Done!\nYou may [Open] a folder to \nstart a new organizing task.')
             self.dirEdit.setText('')
             self._appStatus = 0
             self.clean_data()
