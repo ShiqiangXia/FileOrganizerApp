@@ -9,7 +9,7 @@ from setuptools import setup
 import glob
 
 APP = ['fileorganizer.py']
-DATA_FILES = [('file_organizer', glob.glob('examples/*.*')),('venv', glob.glob('examples/*.*'))]
+DATA_FILES = [('file_organizer', glob.glob('examples/*.*')),]
 OPTIONS = {'argv_emulation': True, 'iconfile':'icon.icns'}
 
 setup(
